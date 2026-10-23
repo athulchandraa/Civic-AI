@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@theme {
+  --color-civic-green: #174a3b;
+  --color-civic-green-hover: #21634d;
+  --color-civic-maroon: #762d2b;
+  --color-civic-saffron: #d7953d;
+  --color-civic-paper: #fffdf7;
+  --color-civic-ink: #273c33;
+  --font-sans: "Asap Sharp", "Segoe UI", sans-serif;
+  --font-serif: Georgia, "Times New Roman", serif;
+}
