@@ -20,8 +20,8 @@ const leadership = [
   {
     name: 'Om Prakash Mathur',
     title: 'Governor of Kerala',
-    image: '/officials/governor.jpg',
-    imageAlt: 'Official portrait of Kerala Governor Rajendra Vishwanath Arlekar',
+    image: 'https://lokbhavan.kerala.gov.in/images/2026/om_prakash_mathur_govr.jpg',
+    imageAlt: 'Official portrait of Kerala Governor Om Prakash Mathur',
     source: 'https://lokbhavan.kerala.gov.in/',
     sourceLabel: 'Kerala Lok Bhavan',
     accent: 'bg-[#f5eee3]',

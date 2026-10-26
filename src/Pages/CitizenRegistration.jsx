@@ -1,7 +1,12 @@
 import { Link } from 'react-router-dom'
 import { MdAccountBalance, MdArrowForward, MdLockOutline, MdOutlineMailOutline, MdPhoneIphone } from 'react-icons/md'
+import Otp from '../Components/Otp'
 
 function CitizenRegistration() {
+
+  
+
+
   return (
     <main className="grid min-h-screen grid-cols-1 bg-civic-paper font-sans text-civic-ink md:grid-cols-[minmax(0,.7fr)_minmax(0,1.3fr)] lg:grid-cols-2">
       <section className="relative isolate order-2 flex min-h-[340px] flex-col justify-between overflow-hidden bg-[#557c61] p-[26px] sm:min-h-[390px] sm:p-[32px] md:sticky md:top-0 md:order-1 md:h-dvh md:min-h-0 md:p-6 lg:p-[clamp(30px,4vw,56px)]" aria-label="A Kerala neighborhood with homes, coconut palms and green hills">
@@ -173,18 +178,21 @@ function CitizenRegistration() {
           </form>
 
           <div className="my-4 flex items-center gap-3">
-            <span className="h-px flex-1 bg-[#e8e4d9]" />
-            <span className="text-[10px] uppercase tracking-[.13em] text-[#888e84]">Or continue with Google</span>
-            <span className="h-px flex-1 bg-[#e8e4d9]" />
+            {/* <span className="h-px flex-1 bg-[#e8e4d9]" /> */}
+            {/* <span className="text-[10px] uppercase tracking-[.13em] text-[#888e84]">Or continue with Google</span> */}
+            {/* <span className="h-px flex-1 bg-[#e8e4d9]" /> */}
           </div>
           <div className="min-h-11 rounded-lg border border-dashed border-[#d9d7ca] bg-[#fffefa]" role="group" aria-label="Reserved space for Google authentication" />
 
           <p className="mt-4 text-center text-xs text-[#7d857c]">
             Already have an account?
-            <Link className="ml-1 font-bold text-civic-maroon hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-civic-green" to="/">Login</Link>
+            <Link className="ml-1 font-bold text-civic-maroon hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-civic-green" to="/login">Login</Link>
           </p>
         </div>
       </section>
+
+      {/* After recieved response from server that server send otp */}
+      {/* <Otp/> */}
     </main>
   )
 }

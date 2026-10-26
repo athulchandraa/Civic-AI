@@ -8,6 +8,9 @@ import UserDashboard from './AuthorizedPages/UserDashboard'
 import Complaint from './AuthorizedPages/Complaint'
 import ComplaintStatus from './AuthorizedPages/ComplaintStatus'
 import Rti from './AuthorizedPages/Rti'
+import ChatBot from './AuthorizedComponents/ChatBot'
+import UserProfile from './AuthorizedPages/UserProfile'
+import FindSchemes from './AuthorizedPages/FindSchemes'
 
 
 function App() {
@@ -23,7 +26,10 @@ function App() {
       <Route path='/user/complaint/:id' element={<Complaint/>}/>
       <Route path='/user/complaint-status/:id' element={<ComplaintStatus/>}/>
       <Route path='/user/rti/:id' element={<Rti/>}/>
+      <Route path='/user/profile/:id' element={<UserProfile/>}/>
+      <Route path='/user/find-scheme/:id' element={<FindSchemes/>}/>
     </Routes>
+    <ChatBot/>
     </>
   )
 }

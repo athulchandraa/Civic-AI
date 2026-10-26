@@ -25,10 +25,14 @@ function SideBar(data) {
    }else if(menu=="Complaint Status"){
     Location('/user/complaint-status/:id')
    }else if(menu=="Know a Program"){
-    alert("Item Coming Soon...")
+    Location('/user/find-scheme/:id')
    }else if(menu=="RTI"){
     Location('/user/rti/:id')
-   }else if(menu=="logout"){
+   }
+   else if(menu=="My Profile"){
+    Location('/user/profile/:id')
+   }
+   else if(menu=="logout"){
     Location('/')
    }
     

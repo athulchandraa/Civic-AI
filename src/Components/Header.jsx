@@ -1,8 +1,16 @@
 import React from 'react'
 import { FiArrowDownRight, FiArrowRight, FiShield } from 'react-icons/fi'
+import { useNavigate } from 'react-router-dom'
 
 
 function Header() {
+  const Location=useNavigate()
+
+
+  const openUserProfile=()=>{
+    Location('/user/profile/:id')
+  }
+
   return (
     <div>
         <header className="border-b border-[#e8ede9] bg-white">
@@ -32,7 +40,7 @@ function Header() {
                     </a>
                   </div> */}
                   <div>
-                    <img className='w-10 h-10 rounded-full' src="https://www.pngitem.com/pimgs/m/130-1300253_female-user-icon-png-download-user-image-color.png" alt="" />
+                    <img onClick={()=>openUserProfile()} className='w-10 h-10 rounded-full' src="https://www.pngitem.com/pimgs/m/130-1300253_female-user-icon-png-download-user-image-color.png" alt="" />
                     
                   </div>
                 </div>
