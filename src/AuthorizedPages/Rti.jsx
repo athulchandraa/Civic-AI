@@ -1,6 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import SideBar from './SideBar'
 import Header from '../Components/Header'
+
+import { getOfficeDetailsAPI, requestRtiAPI } from '../../api/apiService';
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 
 const districts = [
@@ -39,11 +43,27 @@ function Rti() {
     toDate: "",
     format: "Electronic copy",
     bpl: "No",
+    todayDate:"",
+    todayeTime:""
   });
+
+  const sessionData=()=>{
+    const sessionStore=JSON.parse(sessionStorage.getItem("existingUser"))
+    setForm({...form,applicantName:sessionStore.name,district:sessionStore.district,email:sessionStore.email,phone:sessionStore.phone,})
+  }
+
+  useEffect(()=>{
+    sessionData()
+  },[])
+
+  const navigate=useNavigate()
+  
 
   const [document, setDocument] = useState(null);
   const [message, setMessage] = useState("");
   const [reference, setReference] = useState("");
+  const[buttonVisible,setButtonVisible]=useState(false)
+  const [rtiResponse,setRtiResponse]=useState("")  
 
   const update = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -86,6 +106,65 @@ function Rti() {
     );
   };
 
+  const allFilled=()=>{
+    const {applicantName,address,district,email,phone,authority,officeAddress,subject,information,fromDate,toDate,format,bpl,todayDate,todayeTime}=form
+    if(applicantName && address && district && email && phone && authority && subject && information && fromDate && toDate && format && bpl){
+      setButtonVisible(true)
+    }else{
+      setButtonVisible(false)
+    }
+  }
+
+  useEffect(()=>{
+    allFilled()
+  },[form])
+
+
+  //Ai Search Feature
+  const searchUsingAI=async()=>{
+    const {applicantName,address,district,email,phone,authority,officeAddress,subject,information,fromDate,toDate,format,bpl}=form
+    if(!applicantName && !address && !district && !email && !phone && !authority && !subject && !information && !fromDate && !toDate && !format && !bpl){
+      toast.warning("Please fill all the form for AI Search")
+    }else{
+      //AI FEATURE API CALL
+      console.log("API CALL");
+      
+      const officeData={district,department:authority}
+      const response=await getOfficeDetailsAPI(officeData)
+      const result=response.data
+      if(result.success==true){
+        console.log(result.data);
+        const {officename,address,pincode,phone,email}=result.data
+        console.log(officename,address,pincode,phone,email);
+        setForm({...form,officeAddress:`${officename},${officeAddress},${pincode}`})
+        
+      }else{
+        console.log("Something went Wrong...");
+        
+      }
+      
+    }
+  }
+
+  const handleSubmit=async(e)=>{
+    e.preventDefault()
+    
+    const nowClock=new Date()
+
+    const{applicantName,address,district,email,phone,authority,officeAddress,subject,information,fromDate,toDate,format,bpl,todayeTime,todayDate}=form
+
+    if(applicantName && address && district && email && phone && authority && officeAddress && subject && information && fromDate && toDate && format && bpl){
+      const response=await requestRtiAPI({...form,submittedAt:nowClock})
+      console.log(response.data.data);
+      setRtiResponse(response.data.data);
+      navigate('/rti-reciept',{state:response.data.data})
+
+    }else{
+      console.log("Error");
+      toast.error("Fill form")
+    }    
+  }
+
   return (
     <div className='flex'>
       <SideBar data={'File a Complaint'}/>
@@ -118,7 +197,7 @@ function Rti() {
                     RTI Application
                   </h1>
                   <p className="mt-1 text-sm text-slate-500">
-                    Right to Information · Civics AI
+                    Right to Information · Civic AI
                   </p>
                 </div>
               </div>
@@ -176,6 +255,7 @@ function Rti() {
                   name="applicantName"
                   value={form.applicantName}
                   onChange={update}
+                  disabled
                   className={inputClass}
                   placeholder="Enter your full name"
                   maxLength={150}
@@ -221,6 +301,7 @@ function Rti() {
                   name="email"
                   value={form.email}
                   onChange={update}
+                  disabled
                   className={inputClass}
                   placeholder="you@example.com"
                   maxLength={254}
@@ -234,6 +315,7 @@ function Rti() {
                   name="phone"
                   value={form.phone}
                   onChange={update}
+                  disabled
                   className={inputClass}
                   placeholder="Enter mobile number"
                   pattern="[0-9+\-\s()]{7,20}"
@@ -314,12 +396,17 @@ function Rti() {
 
             <div className="mt-5 rounded-xl border border-blue-100 bg-blue-50 p-4">
               <p className="text-sm font-semibold text-blue-900">
-                Not sure which department to select?
+                Not sure the department address ?
               </p>
               <p className="mt-1 text-sm leading-6 text-blue-800">
-                Civics AI can help suggest a possible authority. Verify the
+                Civic AI can help suggest authority address . Verify the
                 correct Public Information Officer before official filing.
               </p>
+              {
+                buttonVisible ?
+                <button type='button' onClick={searchUsingAI} className='bg-blue-400 px-3 py-1 rounded text-white mt-3'>Search with AI</button> :
+                <button type='button'  className='bg-blue-200 px-3 py-1 rounded text-white mt-3' disabled>Locked</button>
+                }
             </div>
           </section>
 
@@ -442,7 +529,9 @@ function Rti() {
           </section>
 
           {/* Supporting documents */}
-          <section className={sectionClass}>
+          {
+            form.bpl=="Yes" &&
+            <section className={sectionClass}>
             <div className="mb-5 flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-700">
                 <span className="text-lg">04</span>
@@ -496,7 +585,7 @@ function Rti() {
                 }}
               />
             </label>
-          </section>
+          </section>}
 
           {/* Consent and submit */}
           <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
@@ -529,27 +618,8 @@ function Rti() {
 
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
               <button
-                type="button"
-                onClick={() => {
-                  setForm({
-                    applicantName: "",
-                    address: "",
-                    district: "",
-                    email: "",
-                    phone: "",
-                    authority: "",
-                    officeAddress: "",
-                    subject: "",
-                    information: "",
-                    fromDate: "",
-                    toDate: "",
-                    format: "Electronic copy",
-                    bpl: "No",
-                  });
-                  setDocument(null);
-                  setReference("");
-                  setMessage("");
-                }}
+                type="submit"
+                
                 className="rounded-xl border border-slate-200 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
               >
                 Clear Form
@@ -557,6 +627,7 @@ function Rti() {
 
               <button
                 type="submit"
+                onClick={handleSubmit}
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-7 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-200"
               >
                 Submit Application

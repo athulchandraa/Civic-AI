@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import SideBar from './SideBar'
 import Header from '../Components/Header'
+import { registerComplaintAPI } from '../../api/apiService';
+import toast from 'react-hot-toast';
 
 
 const districts = [
@@ -59,10 +61,17 @@ function Complaint() {
     localBody: "",
     location: "",
     description: "",
+    email:""
   });
 
-  console.log(form);
+    const sessionData=()=>{
+      const sessionStore=JSON.parse(sessionStorage.getItem("existingUser"))
+      setForm({...form,email:sessionStore.email})
+    }
   
+    useEffect(()=>{
+      sessionData()
+    },[])  
 
   const [files, setFiles] = useState([]);
   const [analysis, setAnalysis] = useState("");
@@ -116,9 +125,13 @@ function Complaint() {
       return;
     }
 
-    setFiles(selectedFiles);
+    setFiles((prev)=>[...prev,...selectedFiles])
     setMessage("");
   };
+
+  const removeFiles=(index)=>{
+    setFiles((prev)=>prev.filter((_,i)=>i!==index))
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -131,21 +144,37 @@ function Complaint() {
 
     const id = `CIV-${Date.now().toString().slice(-8)}`;
 
-    const complaintData = {
-      ...form,
-      suggestedAuthority: analysis || "Pending authority review",
-      status: "Pending",
-      complaintId: id,
-      createdAt: new Date().toISOString(),
-      attachments: files.map((file) => file.name),
-    };
+    // const complaintData = {
+    //   ...form,
+    //   suggestedAuthority: analysis || "Pending authority review",
+    //   status: "Pending",
+    //   complaintId: id,
+    //   createdAt: new Date().toISOString(),
+    //   attachments: files.map((file) => file.name),
+    // };
+
+    const formData=new FormData()
+    formData.append("title",form.title)
+    formData.append("category",form.category)
+    formData.append("location",form.location)
+    formData.append("description",form.description)
+    formData.append("email",form.email)
+    formData.append("suggestedAuthority",analysis || "pending Authority Review")
+
+    files.forEach((file)=>{
+      formData.append("attachments",file)
+    })
+
+    const response=await registerComplaintAPI(formData)
 
     // Demo only: replace with your Express API request.
-    console.log("Complaint data:", complaintData);
-
-    setComplaintId(id);
+    if(response.status==201){
+      toast.success(`${response?.data?.message}`)
+    }else{
+      toast.error("Complaint Register Failed")
+    }
     setMessage(
-      "Demo submission successful. Connect the backend to save this complaint permanently."
+      `Complaint submission successful. Complaint ID : ${response.data?.complaint?.complaintId}`
     );
   };
 
@@ -182,7 +211,7 @@ function Complaint() {
                 Submit a Complaint
               </h1>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-                Report a public issue and let Civics AI help identify
+                Report a public issue and let Civic AI help identify
                 the appropriate government authority.
               </p>
             </div>
@@ -388,7 +417,7 @@ function Complaint() {
                 multiple
                 accept=".jpg,.jpeg,.png,.webp,.pdf"
                 onChange={handleFiles}
-                className="sr-only"
+                className="hidden"
               />
             </label>
 
@@ -406,63 +435,18 @@ function Complaint() {
                     <span className="text-xs text-slate-400">
                       {(file.size / 1024).toFixed(0)} KB
                     </span>
+                    {/* Remove */}
+                    <button type='button' onClick={()=>removeFiles(index)} className='text-red-500'>Remove
+                  </button>
                   </div>
+                  
                 ))}
               </div>
             )}
           </section>
 
           {/* AI analysis */}
-          {/* <section className="overflow-hidden rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 to-indigo-50 p-5 sm:p-8">
-            <div className="flex items-start gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-blue-700 shadow-sm">
-                <svg
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  className="h-6 w-6"
-                >
-                  <path d="m12 3 1.9 5.8L20 11l-6.1 2.2L12 19l-2-5.8L4 11l6-2.2Z" />
-                  <path d="m19 14 1.2 2.8L23 18l-2.8 1.1L19 22l-1.1-2.9L15 18l2.9-1.2Z" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <h2 className="text-lg font-bold text-slate-900">
-                  AI Complaint Analysis
-                </h2>
-                <p className="mt-1 text-sm leading-6 text-slate-600">
-                  Analyze your complaint to identify a possible
-                  government department or responsible authority.
-                </p>
-              </div>
-            </div>
 
-            <button
-              type="button"
-              onClick={analyzeComplaint}
-              disabled={analyzing}
-              className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-blue-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {analyzing ? "Analyzing..." : "Analyze Complaint"}
-              {!analyzing && <span>→</span>}
-            </button>
-
-            {analysis && (
-              <div className="mt-5 rounded-xl border border-blue-100 bg-white p-4">
-                <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  Suggested authority
-                </p>
-                <p className="mt-2 font-semibold text-slate-900">
-                  {analysis}
-                </p>
-                <p className="mt-2 text-xs leading-5 text-slate-500">
-                  This is a preliminary suggestion based on the selected
-                  category, not a verified AI result or confirmed routing.
-                </p>
-              </div>
-            )}
-          </section> */}
 
           {/* Feedback */}
           {message && (

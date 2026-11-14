@@ -8,7 +8,7 @@ function Header() {
 
 
   const openUserProfile=()=>{
-    Location('/user/profile/:id')
+    Location('/user/profile')
   }
 
   return (

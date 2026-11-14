@@ -1,10 +1,11 @@
 import { FiArrowDownRight, FiArrowUpRight, FiMapPin, FiShield } from 'react-icons/fi'
 import DistrictInfoPanel from '../Components/DistrictInfoPanel'
 import KeralaDistrictMap from '../Components/KeralaDistrictMap'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FaLocationArrow } from 'react-icons/fa'
 import { FaLocationDot } from 'react-icons/fa6'
 import { Link } from 'react-router-dom'
+import { getAllOfficerDataAPI } from '../../api/apiService'
 
 
 const leadership = [
@@ -29,6 +30,8 @@ const leadership = [
 ]
 
 function LeadershipCard({ person }) {
+
+
   return (
     <article className="flex min-w-0 items-center gap-4 rounded-2xl border border-[#e7ece8] bg-white p-4 shadow-[0_8px_24px_rgba(20,55,39,0.05)] sm:p-5">
       <img
@@ -62,6 +65,43 @@ function DashBoard() {
   const [hoveredDistrict, setHoveredDistrict] = useState(null)
   const displayedDistrict = hoveredDistrict ?? selectedDistrict
 
+
+  // console.log(officerslist.Thiruvananthapuram);
+  const districtName=selectedDistrict
+  console.log(districtName);
+
+
+  const [officerslist,setOfficerslist]=useState({})
+  console.log(officerslist);
+  
+  
+    useEffect(()=>{
+    getAllOfficers()
+  },[])
+
+
+  const getAllOfficers=async()=>{
+    const response=await getAllOfficerDataAPI()
+    setOfficerslist(response?.data[0]?.districts || {});
+  }
+
+  const selectedOfficers=officerslist[selectedDistrict]
+  console.log(selectedOfficers);
+
+  // Object.entries(selectedOfficers || {}).filter(([key])=>key !=="_id").map(([key,officer])=>(
+  //   <div key={key}>
+  //     <h2>{officer.name}</h2>
+  //   </div>
+  // ))
+  
+
+
+  
+  
+  
+  
+
+
   return (
     <div className="min-h-screen bg-[#f6f8f5] text-[#23352b]">
       <header className="border-b border-[#e8ede9] bg-white">
@@ -78,15 +118,15 @@ function DashBoard() {
             </span>
           </a>
           <div className="flex items-center gap-3">
-            <span className="hidden items-center gap-2 rounded-full bg-[#f1f6f2] px-3 py-2 text-xs font-medium text-[#53675a] sm:flex">
+            {/* <span className="hidden items-center gap-2 rounded-full bg-[#f1f6f2] px-3 py-2 text-xs font-medium text-[#53675a] sm:flex">
               <span className="h-2 w-2 rounded-full bg-[#4c9468]" />
               Citizen Login
-            </span>
+            </span> */}
             <a
-              href="#districts"
+              href='/login'
               className="inline-flex items-center gap-2 rounded-xl bg-[#174a3b] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#21634d]"
             >
-              Explore districts
+              Citizen Login
               <FiArrowDownRight aria-hidden="true" />
             </a>
           </div>
@@ -188,10 +228,9 @@ function DashBoard() {
               district={displayedDistrict}
               // isPreview={Boolean(hoveredDistrict && hoveredDistrict !== selectedDistrict)}
 
-              //Ivde aanu Duplication based on district varunnath
-
               
             /> */}
+            
             <div className='rounded-lg shadow-lg px-3 py-1 bg-white'>
               {/* {selectedDistrict} */}
               <div className='px-3 py-1 flex items-center gap-5'>
@@ -209,73 +248,23 @@ function DashBoard() {
               {/* Officers Listing  */}
               <div className='grid grid-cols-3 gap-5 my-5 p-2'>
                 {/* Duplicating... */}
-                <div className='shadow p-2 flex justify-center'>
+                {
+                 Object.entries(selectedOfficers || {}).filter(([key])=>key!=="_id").map(([key,officer])=>(
+                  <div className='shadow p-2 flex justify-center'>
                   <div>
-                    <div className='w-full flex justify-center'><img className='w-50 h-50' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAsL1TzkAYujTI2ZunkcQsrB9h9rhuXUim0_R7_2Xsyg&s=10" alt="" /></div>
+                    <div className='w-full flex justify-center'><img className='w-50 h-50' src="https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png" alt="" /></div>
                     <div className='w-full text-center mt-3'>
-                      <p className='font-medium'>Shaji V Nair IAS</p>
-                      <p className='my-2'>District Collector & District Magistrate</p>
+                      <p className='font-medium'>{officer.name}</p>
+                      <p className='my-2 font-bold'>{key=="collector" ? "District Collector" : key=="dpc" ? "District Police Chief" : key=="dmo" ? "District Medical Officer" : key == "deo" ? "District Eductaional Officer" : key =="rto" ? "Regional Transport Officer" : key == "dfo" ? "District Forest Officer" : ""}</p>
                       <Link className='bg-blue-200 px-3 py-1 rounded text-blue-800 font-medium'>View Profile</Link>
                     </div>
                   </div>
                  
 
                 </div>
-                {/* DPC */}
-                <div className='shadow p-2 flex justify-center'>
-                  <div>
-                    <div className='w-full flex justify-center'><img className='w-50 h-50' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTpry_ZAObX6TGJXwNunqQqxTp8C0pbzFVR1EH217uUpwZeC2KekQuTRs5&s=10" alt="" /></div>
-                    <div className='w-full text-center mt-3'>
-                      <p className='font-medium'>Vishnu Pratheep T.K. IPS</p>
-                      <p className='my-2'>District Police Chief</p>
-                      <Link className='bg-blue-200 px-3 py-1 rounded text-blue-800 font-medium'>View Profile</Link>
-                    </div>
-                  </div>
-                </div>
-                {/* DPC */}
-                <div className='shadow p-2 flex justify-center'>
-                  <div>
-                    <div className='w-full flex justify-center'><img className='w-50 h-50' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTpry_ZAObX6TGJXwNunqQqxTp8C0pbzFVR1EH217uUpwZeC2KekQuTRs5&s=10" alt="" /></div>
-                    <div className='w-full text-center mt-3'>
-                      <p className='font-medium'>Vishnu Pratheep T.K. IPS</p>
-                      <p className='my-2'>District Police Chief</p>
-                      <Link className='bg-blue-200 px-3 py-1 rounded text-blue-800 font-medium'>View Profile</Link>
-                    </div>
-                  </div>
-                </div>
-                {/* DPC */}
-                <div className='shadow p-2 flex justify-center'>
-                  <div>
-                    <div className='w-full flex justify-center'><img className='w-50 h-50' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTpry_ZAObX6TGJXwNunqQqxTp8C0pbzFVR1EH217uUpwZeC2KekQuTRs5&s=10" alt="" /></div>
-                    <div className='w-full text-center mt-3'>
-                      <p className='font-medium'>Vishnu Pratheep T.K. IPS</p>
-                      <p className='my-2'>District Police Chief</p>
-                      <Link className='bg-blue-200 px-3 py-1 rounded text-blue-800 font-medium'>View Profile</Link>
-                    </div>
-                  </div>
-                </div>
-                {/* DPC */}
-                <div className='shadow p-2 flex justify-center'>
-                  <div>
-                    <div className='w-full flex justify-center'><img className='w-50 h-50' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTpry_ZAObX6TGJXwNunqQqxTp8C0pbzFVR1EH217uUpwZeC2KekQuTRs5&s=10" alt="" /></div>
-                    <div className='w-full text-center mt-3'>
-                      <p className='font-medium'>Vishnu Pratheep T.K. IPS</p>
-                      <p className='my-2'>District Police Chief</p>
-                      <Link className='bg-blue-200 px-3 py-1 rounded text-blue-800 font-medium'>View Profile</Link>
-                    </div>
-                  </div>
-                </div>
-                {/* DPC */}
-                <div className='shadow p-2 flex justify-center'>
-                  <div>
-                    <div className='w-full flex justify-center'><img className='w-50 h-50' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTpry_ZAObX6TGJXwNunqQqxTp8C0pbzFVR1EH217uUpwZeC2KekQuTRs5&s=10" alt="" /></div>
-                    <div className='w-full text-center mt-3'>
-                      <p className='font-medium'>Vishnu Pratheep T.K. IPS</p>
-                      <p className='my-2'>District Police Chief</p>
-                      <Link className='bg-blue-200 px-3 py-1 rounded text-blue-800 font-medium'>View Profile</Link>
-                    </div>
-                  </div>
-                </div>
+                 ))
+                }
+               
                 
                 
 

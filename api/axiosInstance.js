@@ -4,6 +4,23 @@ const axiosInstace=axios.create({
     baseURL:"http://localhost:3000"
 },5000)
 
+
+
+
+//Request Interceptors : Handling Token append to Headers
+axiosInstace.interceptors.request.use(
+    (config)=>{
+        const token=sessionStorage.getItem("token")
+        if(token){
+            config.headers.Authorization=`Bearer ${token}`
+        }
+        return config
+    },
+    (error)=>{
+        return Promise.reject(error)
+    }
+)
+
 //Global error Handling
 
 axios.interceptors.response.use(

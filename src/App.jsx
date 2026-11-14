@@ -11,6 +11,19 @@ import Rti from './AuthorizedPages/Rti'
 import ChatBot from './AuthorizedComponents/ChatBot'
 import UserProfile from './AuthorizedPages/UserProfile'
 import FindSchemes from './AuthorizedPages/FindSchemes'
+import { Toaster } from 'react-hot-toast'
+import RtiReceipt from './AuthorizedPages/RtiReceipt'
+import ChatbotWidget from './AuthorizedComponents/ChatbotWidget'
+import UserLayout from './UserLayout'
+import AdminLayout from './Admin/AdminLayout'
+import AdminDashboard from './Admin/AdminDashboard'
+import ComplaintView from './Admin/ComplaintView'
+import OfficerManagement from './Admin/OfficerManagement'
+import RtiManagement from './Admin/RtiManagement'
+
+
+
+
 
 
 function App() {
@@ -22,14 +35,31 @@ function App() {
       <Route path='/registration' element={<CitizenRegistration/>}/>
       <Route path='/otp' element={<Otp />}/>
       <Route path='/' element={<DashBoard/>}/>
-      <Route path='/user/:id' element={<UserDashboard/>}/>
-      <Route path='/user/complaint/:id' element={<Complaint/>}/>
-      <Route path='/user/complaint-status/:id' element={<ComplaintStatus/>}/>
-      <Route path='/user/rti/:id' element={<Rti/>}/>
-      <Route path='/user/profile/:id' element={<UserProfile/>}/>
-      <Route path='/user/find-scheme/:id' element={<FindSchemes/>}/>
+
+
+        
+        <Route path='/user' element={<UserLayout/>}>
+          <Route index element={<UserDashboard/>}/>
+          <Route path='complaint' element={<Complaint/>}/>
+          <Route path='complaint-status' element={<ComplaintStatus/>}/>
+          <Route path='rti' element={<Rti/>}/>
+          <Route path='profile' element={<UserProfile/>}/>
+          <Route path='find-scheme' element={<FindSchemes/>}/>
+        </Route>
+  
+        <Route path='/admin' element={<AdminDashboard/>}/>
+        <Route path='/admin/complaint-view' element={<ComplaintView/>}/>
+        <Route path='/admin/officer-management' element={<OfficerManagement/>}/>
+        <Route path='/admin/rti-management' element={<RtiManagement />}/>
+      
+
+      <Route path='/rti-reciept' element={<RtiReceipt/>}/>
+
     </Routes>
-    <ChatBot/>
+    <Toaster
+    position="top-right"
+    reverseOrder={false}
+  />
     </>
   )
 }

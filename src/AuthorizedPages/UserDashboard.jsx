@@ -92,7 +92,7 @@ function UserDashboard() {
       <div className="mx-auto max-w-7xl">
 
         {/* Welcome section */}
-        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-blue-950 to-blue-700 px-6 py-10 sm:px-10 sm:py-14 lg:px-14">
+        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-green-950 to-green-700 px-6 py-10 sm:px-10 sm:py-14 lg:px-14">
           <div className="pointer-events-none absolute -right-16 -top-20 h-72 w-72 rounded-full border-[45px] border-white/5" />
           <div className="pointer-events-none absolute -bottom-32 right-48 h-72 w-72 rounded-full border-[45px] border-white/5" />
 
@@ -203,7 +203,7 @@ function UserDashboard() {
                 Transparent. Accessible. Citizen-first.
               </h3>
               <p className="mt-2 text-sm leading-6 text-slate-500">
-                Civics AI helps citizens navigate public services
+                Civic AI helps citizens navigate public services
                 through one simple interface.
               </p>
             </div>

@@ -1,171 +1,249 @@
-import React from 'react'
-import { useEffect, useRef, useState } from "react";
 
-function ChatBot() {
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-   const [isOpen, setIsOpen] = useState(false);
-  const [message, setMessage] = useState("");
+const faqs = [
+  {
+    question: "How can I file a complaint?",
+    keywords: ["complaint", "file", "submit", "grievance"],
+    answer:
+      "You can file a complaint through the Complaint Corner. Enter your complaint details, select the relevant category, describe the issue and upload supporting documents if available. Then submit your complaint.",
+    action: "Go to Complaint Corner",
+    path: "/user/complaint",
+  },
+  {
+    question: "How can I track my complaint?",
+    keywords: ["track", "status", "pending", "complaint status"],
+    answer:
+      "You can track your submitted complaints through the Complaint Status section. You can view the current status and updates related to your complaint.",
+    action: "Check Complaint Status",
+    path: "/user/complaint-status",
+  },
+  {
+    question: "What are the different complaint statuses?",
+    keywords: ["pending", "under review", "assigned", "resolved", "status meaning"],
+    answer:
+      "Pending: Your complaint is submitted and awaiting action.\n\nUnder Review: The complaint is being examined.\n\nAssigned: It has been forwarded to the concerned department.\n\nResolved: The authority has completed the necessary action.",
+  },
+  {
+    question: "How can I find government schemes?",
+    keywords: ["scheme", "schemes", "scholarship", "benefit", "government program"],
+    answer:
+      "Civic AI helps you discover government schemes based on your personal details and eligibility. Visit Find Schemes, provide the required information and explore the schemes suitable for you.",
+    action: "Find Government Schemes",
+    path: "/user/find-scheme",
+  },
+  {
+    question: "How do I check scheme eligibility?",
+    keywords: ["eligibility", "eligible", "qualify", "scheme eligibility"],
+    answer:
+      "Scheme eligibility depends on factors such as age, income, education, location and category. Enter the requested details in Find Schemes to discover suitable government programs.",
+    action: "Find Schemes",
+    path: "/user/find-scheme",
+  },
+  {
+    question: "How can I submit an RTI application?",
+    keywords: ["rti", "right to information", "information request"],
+    answer:
+      "You can submit an RTI application through the RTI section. Enter the concerned public authority, provide the information you are requesting and submit your application. You can also view your submission receipt.",
+    action: "Apply for RTI",
+    path: "/user/rti",
+  },
+  {
+    question: "How can I download my RTI receipt?",
+    keywords: ["receipt", "download receipt", "rti receipt"],
+    answer:
+      "After successfully submitting your RTI application, you can view your application receipt and use the Download Receipt option to save it as a PDF.",
+    action: "Go to RTI",
+    path: "/user/rti",
+  },
+  {
+    question: "How can I update my profile?",
+    keywords: ["profile", "update profile", "personal details", "edit details"],
+    answer:
+      "You can view and update your personal information from the My Profile section. Make sure your details are accurate so that you can receive relevant scheme recommendations.",
+    action: "My Profile",
+    path: "/user/profile",
+  },
+  {
+    question: "Is my personal information safe?",
+    keywords: ["privacy", "safe", "security", "personal information", "data"],
+    answer:
+      "Civic AI uses the information you provide to support its services, such as complaint submission and scheme recommendations. Please avoid sharing passwords or sensitive information in the chatbot.",
+  },
+  {
+    question: "How can I contact support?",
+    keywords: ["help", "support", "contact", "assistance"],
+    answer:
+      "You can use the relevant sections of your dashboard to access Civic AI services. For assistance with a particular application, check its status or contact the concerned authority.",
+  },
+];
+
+const suggestions = [
+  "How can I file a complaint?",
+  "How can I track my complaint?",
+  "How can I find government schemes?",
+  "How can I submit an RTI application?",
+  "How can I update my profile?",
+];
+
+function Chatbot() {
+  const navigate = useNavigate();
+
   const [messages, setMessages] = useState([
     {
-      role: "assistant",
-      content:
-        "Hi! 👋 Welcome to Civics AI. How can I help you today?",
+      type: "bot",
+      text: "Hi! 👋 Welcome to Civic AI. How can I help you today?",
     },
   ]);
 
-  const bottomRef = useRef(null);
+  const [question, setQuestion] = useState("");
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({
-      behavior: "smooth",
-    });
-  }, [messages]);
+  const handleQuestion = (text) => {
+    if (!text.trim()) return;
 
-  const handleSend = (e) => {
-    e.preventDefault();
+    const userMessage = {
+      type: "user",
+      text: text,
+    };
 
-    const text = message.trim();
-    if (!text) return;
+    const normalized = text.toLowerCase();
 
-    setMessages((prev) => [
-      ...prev,
-      { role: "user", content: text },
-    ]);
-
-    setMessage("");
-
-    setMessages((prev) => [
-      ...prev,
-      {
-        role: "assistant",
-        content:"Welcome to Civic AI",
-      },
-    ]);
     
+const matchedFaq = faqs
+  .flatMap((faq) =>
+    faq.keywords.map((keyword) => ({
+      faq,
+      keyword,
+    }))
+  )
+  .filter(({ keyword }) => {
+    const regex = new RegExp(
+      `\\b${keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`,
+      "i"
+    );
+
+    return regex.test(normalized);
+  })
+  .sort(
+    (a, b) => b.keyword.length - a.keyword.length
+  )[0]?.faq;
+
+
+    let botMessage;
+
+    if (
+      ["hi", "hello", "hey"].includes(normalized.trim())
+    ) {
+      botMessage = {
+        type: "bot",
+        text: "Hello! 👋 How can I assist you with Civic AI today?",
+      };
+    } else if (matchedFaq) {
+      botMessage = {
+        type: "bot",
+        text: matchedFaq.answer,
+        action: matchedFaq.action,
+        path: matchedFaq.path,
+      };
+    } else {
+      botMessage = {
+        type: "bot",
+        text: "Sorry, I couldn't understand your question. Please try asking about complaints, complaint status, government schemes, RTI applications or your profile.",
+      };
+    }
+
+    setMessages((prev) => [
+      ...prev,
+      userMessage,
+      botMessage,
+    ]);
+
+    setQuestion("");
   };
 
-
   return (
-    <div className="fixed bottom-5 right-5 z-[9999]">
-      {/* Floating Chat Icon */}
-      {!isOpen && (
-        <button
-          onClick={() => setIsOpen(true)}
-          aria-label="Open chatbot"
-          className="flex h-14 w-14 items-center justify-center
-          rounded-full bg-green-700 text-2xl text-white
-          shadow-xl transition hover:scale-110 hover:bg-green-800"
-        >
-          💬
-        </button>
-      )}
+    <div className="flex flex-col h-full bg-white">
 
-      {/* Chat Window */}
-      {isOpen && (
-        <div className="flex h-[min(520px,calc(100dvh-32px))]
-        w-[min(370px,calc(100vw-32px))] flex-col
-        overflow-hidden rounded-2xl border border-gray-200
-        bg-white shadow-2xl">
+      {/* Chat Messages */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
 
-          {/* Header */}
-          <div className="flex items-center justify-between
-          bg-green-800 p-4 text-white">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center
-              justify-center rounded-full bg-white text-xl">
-                🤖
-              </div>
-
-              <div>
-                <h3 className="font-semibold">
-                  Civics AI
-                </h3>
-                <p className="text-xs text-blue-100">
-                  Citizen Assistant
-                </p>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setIsOpen(false)}
-              aria-label="Close chatbot"
-              className="rounded-lg px-3 py-1 text-2xl
-              hover:bg-blue-700"
-            >
-              &times;
-            </button>
-          </div>
-
-          {/* Messages */}
-          <div className="flex-1 space-y-4 overflow-y-auto
-          bg-gray-50 p-4">
-            {messages.map((item, index) => (
-              <div
-                key={index}
-                className={`flex ${
-                  item.role === "user"
-                    ? "justify-end"
-                    : "justify-start"
-                }`}
-              >
-                <div
-                  className={`max-w-[85%] whitespace-pre-wrap
-                  break-words rounded-2xl px-4 py-3 text-sm ${
-                    item.role === "user"
-                      ? "rounded-br-sm bg-green-700 text-white"
-                      : "rounded-bl-sm border bg-white text-gray-800"
-                  }`}
-                >
-                  {item.content}
-                </div>
-              </div>
-            ))}
-            <div ref={bottomRef} />
-          </div>
-
-          {/* Input */}
-          <form
-            onSubmit={handleSend}
-            className="flex items-center gap-2 border-t
-            bg-white p-3"
+        {messages.map((msg, index) => (
+          <div
+            key={index}
+            className={`flex ${
+              msg.type === "user"
+                ? "justify-end"
+                : "justify-start"
+            }`}
           >
-            <input
-              type="text"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Ask anything..."
-              aria-label="Type your message"
-              className="min-w-0 flex-1 rounded-xl border
-              border-gray-300 px-3 py-3 text-sm outline-none
-              focus:border-green-600 focus:ring-2
-              focus:ring-blue-100"
-            />
-
-            <button
-              type="submit"
-              disabled={!message.trim()}
-              aria-label="Send message"
-              className="flex h-11 w-11 shrink-0
-              items-center justify-center rounded-xl
-              bg-green-700 text-white hover:bg-green-800
-              disabled:opacity-50"
+            <div
+              className={`max-w-[85%] rounded-xl p-3 text-sm whitespace-pre-line ${
+                msg.type === "user"
+                  ? "bg-green-600 text-white"
+                  : "bg-gray-100 text-gray-800"
+              }`}
             >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                className="h-5 w-5"
+              {msg.text}
+
+              {msg.action && (
+                <button
+                  onClick={() => navigate(msg.path)}
+                  className="block mt-3 px-3 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700"
+                >
+                  {msg.action} →
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+
+        {/* Suggested Questions */}
+        {messages.length === 1 && (
+          <div className="space-y-2">
+            <p className="text-xs text-gray-500 font-semibold">
+              SUGGESTED QUESTIONS
+            </p>
+
+            {suggestions.map((item, index) => (
+              <button
+                key={index}
+                onClick={() => handleQuestion(item)}
+                className="block w-full text-left text-sm p-3 border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition"
               >
-                <path d="M22 2 11 13" />
-                <path d="m22 2-7 20-4-9-9-4 20-7Z" />
-              </svg>
-            </button>
-          </form>
-        </div>
-      )}
+                {item} →
+              </button>
+            ))}
+          </div>
+        )}
+
+      </div>
+
+      {/* Input Section */}
+      <div className="p-3 border-t flex gap-2">
+
+        <input
+          type="text"
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
+          onKeyDown={(e) =>
+            e.key === "Enter" && handleQuestion(question)
+          }
+          placeholder="Ask anything..."
+          className="flex-1 outline-none text-sm px-3 py-2"
+        />
+
+        <button
+          onClick={() => handleQuestion(question)}
+          disabled={!question.trim()}
+          className="bg-green-600 text-white px-4 py-2 rounded-lg disabled:opacity-50"
+        >
+          ➤
+        </button>
+
+      </div>
     </div>
-  )
+  );
 }
 
-export default ChatBot
+export default Chatbot;

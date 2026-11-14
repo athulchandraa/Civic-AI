@@ -7,17 +7,19 @@ function Otp({ isOpen = true, ...props }) {
 }
 
 function OtpDialog({
+  isOtp,
+  setIsOtp,
   onClose,
   onConfirm,
   onResend,
   title = 'Verify your identity',
   description = 'Enter the 6-digit code we sent you.',
-  isSubmitting = false,
+  isSubmitting = false
 }) {
   const [digits, setDigits] = useState(Array(6).fill(''))
  
     //Otp Getting This Point
-  const [isOtp,setIsOtp]=useState(null)
+  // const [isOtp,setIsOtp]=useState(null)
   const inputRefs = useRef([])
   const otp = digits.join('')
   const isComplete = digits.every(Boolean)  
@@ -84,7 +86,7 @@ function OtpDialog({
   function handleSubmit(event) {
     event.preventDefault()
     if (isComplete && !isSubmitting) onConfirm?.(otp)
-        setIsOtp(digits.join(''));  
+        // setIsOtp(digits.join(''));  
   }
 
   function handleResend() {

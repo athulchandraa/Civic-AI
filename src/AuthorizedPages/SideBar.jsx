@@ -1,5 +1,6 @@
 import React from 'react'
 import { useState } from "react";
+import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 
 function SideBar(data) {
@@ -19,20 +20,22 @@ function SideBar(data) {
   const SelectedMenu=(menu)=>{
     setActiveMenu(menu)
    if(menu=="Dashboard"){
-    Location('/user/:id')
+    Location('/user')
    }else if(menu=="File a Complaint"){
-    Location('/user/complaint/:id')
+    Location('/user/complaint')
    }else if(menu=="Complaint Status"){
-    Location('/user/complaint-status/:id')
+    Location('/user/complaint-status')
    }else if(menu=="Know a Program"){
-    Location('/user/find-scheme/:id')
+    Location('/user/find-scheme')
    }else if(menu=="RTI"){
-    Location('/user/rti/:id')
+    Location('/user/rti')
    }
    else if(menu=="My Profile"){
-    Location('/user/profile/:id')
+    Location('/user/profile')
    }
    else if(menu=="logout"){
+    sessionStorage.clear("existingUser")
+    toast.success("See u Soon!!")
     Location('/')
    }
     

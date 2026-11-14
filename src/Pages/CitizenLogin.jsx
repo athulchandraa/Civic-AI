@@ -1,7 +1,48 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { MdAccountBalance, MdArrowForward, MdLockOutline, MdOutlineMailOutline } from 'react-icons/md'
+import { useState } from 'react'
+import { toast } from 'react-toastify'
+import { loginUserAPI } from '../../api/apiService'
 
 function CitizenLogin() {
+
+  const navigate=useNavigate()
+  const [userData,setUsedata]=useState({
+    email:"",
+    password:""
+  })
+
+  const loginBtn=async()=>{
+    try{
+      const {email,password}=userData
+    if(email && password){
+       const response=await loginUserAPI(userData)
+       if(response.data.success==true){
+        sessionStorage.setItem("existingUser",JSON.stringify(response.data.existingUser))
+        sessionStorage.setItem("token",response.data.token)
+        console.log(response.data.existingUser.role);
+        
+        if(response.data.existingUser.role=="user"){
+          toast.success("Login Successfull")
+          setTimeout(()=>{
+          navigate(`/user`)
+        })
+        }else if(response.data.existingUser.role=="admin"){
+          toast.success("Welcome ADMIN")
+          setTimeout(()=>{
+          navigate(`/admin`)
+        })
+        }       
+       }
+    }else{
+      toast.warning("Fill the form Completetly")
+    }
+    }catch(error){
+      toast.error("Login Failed...")
+    }
+  }
+
+
   return (
     <main className="grid min-h-screen grid-cols-1 bg-civic-paper font-sans text-civic-ink lg:grid-cols-[minmax(0,1.08fr)_minmax(420px,.92fr)]">
       <section className="relative isolate flex min-h-[390px] flex-col justify-between overflow-hidden bg-[#557c61] p-[27px] sm:p-[30px] lg:min-h-screen lg:p-[clamp(30px,4vw,56px)]" aria-label="A Kerala neighborhood with homes, coconut palms and green hills">
@@ -83,7 +124,7 @@ function CitizenLogin() {
         <div className="absolute inset-x-0 top-0 h-[5px] bg-[linear-gradient(90deg,#174a3b_0_48%,#d7953d_48%_72%,#762d2b_72%)]" />
         <div className="w-full max-w-[405px]">
           <header className="mb-[31px] flex items-center gap-[11px] sm:mb-12 lg:mb-[clamp(39px,7vh,68px)]">
-            <span className="grid size-10 place-items-center rounded-full border border-[#d5dfd5] bg-[#eff3eb] text-[22px] text-civic-green" aria-hidden="true"><MdAccountBalance /></span>
+            <a href='/' className="grid size-10 place-items-center rounded-full border border-[#d5dfd5] bg-[#eff3eb] text-[22px] text-civic-green" aria-hidden="true"><MdAccountBalance /></a>
             <div>
               <p className="m-0 text-[17px] font-bold tracking-[-.035em] text-civic-green">Civic-AI</p>
               <p className="mt-[3px] text-[10px] uppercase tracking-[.08em] text-[#858b80]">Kerala Governance System</p>
@@ -97,7 +138,7 @@ function CitizenLogin() {
             <label className="mb-2 block text-xs font-bold text-[#364b3f]" htmlFor="citizen-email">Email address</label>
             <div className="relative">
               <MdOutlineMailOutline className="pointer-events-none absolute left-[15px] top-1/2 -translate-y-1/2 text-xl text-[#829087]" aria-hidden="true" />
-              <input className="min-h-[54px] w-full rounded-lg border border-[#e1dfd4] bg-[#fffefa] py-0 pl-[46px] pr-[15px] text-sm text-[#263d33] outline-none transition placeholder:text-[#a4aaa2] focus:border-[#53866d] focus:shadow-[0_0_0_4px_rgba(83,134,109,.12)]" id="citizen-email" name="email" type="email" autoComplete="email" placeholder="you@example.com" required />
+              <input onChange={(e)=>setUsedata({...userData,email:e.target.value})} className="min-h-[54px] w-full rounded-lg border border-[#e1dfd4] bg-[#fffefa] py-0 pl-[46px] pr-[15px] text-sm text-[#263d33] outline-none transition placeholder:text-[#a4aaa2] focus:border-[#53866d] focus:shadow-[0_0_0_4px_rgba(83,134,109,.12)]" id="citizen-email" name="email" type="email" autoComplete="email" placeholder="you@example.com" required />
             </div>
           </div>
 
@@ -105,14 +146,14 @@ function CitizenLogin() {
             <label className="mb-2 block text-xs font-bold text-[#364b3f]" htmlFor="citizen-password">Password</label>
             <div className="relative">
               <MdLockOutline className="pointer-events-none absolute left-[15px] top-1/2 -translate-y-1/2 text-xl text-[#829087]" aria-hidden="true" />
-              <input className="min-h-[54px] w-full rounded-lg border border-[#e1dfd4] bg-[#fffefa] py-0 pl-[46px] pr-[15px] text-sm text-[#263d33] outline-none transition placeholder:text-[#a4aaa2] focus:border-[#53866d] focus:shadow-[0_0_0_4px_rgba(83,134,109,.12)]" id="citizen-password" name="password" type="password" autoComplete="current-password" placeholder="Enter your password" required />
+              <input onChange={(e)=>setUsedata({...userData,password:e.target.value})} className="min-h-[54px] w-full rounded-lg border border-[#e1dfd4] bg-[#fffefa] py-0 pl-[46px] pr-[15px] text-sm text-[#263d33] outline-none transition placeholder:text-[#a4aaa2] focus:border-[#53866d] focus:shadow-[0_0_0_4px_rgba(83,134,109,.12)]" id="citizen-password" name="password" type="password" autoComplete="current-password" placeholder="Enter your password" required />
             </div>
           </div>
 
           <div className="mb-[25px] mt-3 flex justify-end">
             <a className="text-xs font-bold text-civic-maroon hover:text-[#a14f30] hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-civic-green" href="#forgot-password">Forgot password?</a>
           </div>
-          <button className="flex min-h-[55px] w-full items-center justify-between rounded-lg bg-civic-green px-[19px] text-sm font-bold text-civic-paper shadow-[0_9px_18px_rgba(23,74,59,.16)] transition hover:-translate-y-px hover:bg-civic-green-hover focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-civic-green" type="button">
+          <button onClick={loginBtn} className="flex min-h-[55px] w-full items-center justify-between rounded-lg bg-civic-green px-[19px] text-sm font-bold text-civic-paper shadow-[0_9px_18px_rgba(23,74,59,.16)] transition hover:-translate-y-px hover:bg-civic-green-hover focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-civic-green" type="button">
             <span>Login</span>
             <MdArrowForward className="text-[21px] text-[#f0c477]" aria-hidden="true" />
           </button>

@@ -2,6 +2,8 @@ import React from 'react'
 import SideBar from './SideBar'
 import Header from '../Components/Header'
 import { useEffect, useState } from "react";
+import { editUserDataAPI } from '../../api/apiService';
+import toast from 'react-hot-toast';
 
     const districts = [
   "Thiruvananthapuram",
@@ -22,26 +24,56 @@ import { useEffect, useState } from "react";
 
 function UserProfile() {
 
+  const[userData,setUserdata]=useState(null)
+
+  // const gettingData=()=>{
+  //   const response=sessionStorage.getItem("existingUser")
+  //   setUserdata(response);
+  // }
+
+  // useEffect(()=>{
+  //   gettingData()
+  // },[])
+
     const [isEditing, setIsEditing] = useState(false);
 
+
+
      const [profile, setProfile] = useState({
-    fullName: "Athul C",
-    phone: "9876543210",
-    email: "athul@example.com",
-    gender: "Male",
-    dob: "2002-05-15",
-    localBody: "Mannanchery Panchayat",
-    taluk: "Ambalappuzha",
-    district: "Alappuzha",
-    annualIncome: "72000",
+    name:"",
+    phone: "",
+    email: "",
+    gender: "",
+    dob: "",
+    panchayath: "",
+    taluk: "",
+    district: "",
+    income: "",
+    email:"",
+    password:""
   });
+
+      const sessionData=()=>{
+      const sessionStore=JSON.parse(sessionStorage.getItem("existingUser"))
+      setProfile({...profile,name:sessionStore.name,district:sessionStore.district,email:sessionStore.email,phone:sessionStore.phone,gender:sessionStore.gender,dob:sessionStore.dob,panchayath:sessionStore.panchayath,taluk:sessionStore.taluk,district:sessionStore.district,income:sessionStore.income,email:sessionStore.email,password:sessionStore.password})
+    }
+    
+  
+    useEffect(()=>{
+      sessionData()
+    },[])
 
   const [formData, setFormData] = useState(profile);
 
   const handleEdit = () => {
     setFormData({ ...profile });
+    handleUpdate()
     setIsEditing(true);
   };
+
+  const handleUpdate=async()=>{
+    
+  }
 
   const handleChange = (e) => {
     setFormData({
@@ -50,20 +82,29 @@ function UserProfile() {
     });
   };
 
-  const handleSave = (e) => {
+  const handleSave =async (e) => {
     e.preventDefault();
     setProfile({ ...formData, email: profile.email });
+    const sessionStore=JSON.parse(sessionStorage.getItem("existingUser"))
+    const id=sessionStore._id
+    
+    const response=await editUserDataAPI(id,formData)
+    if(response.status==201){
+      toast.success("Updated Successfully")      
+      //ee data session il store cheyyanam
+      sessionStorage.setItem("existingUser",JSON.stringify(response.data.data))
+    }
     setIsEditing(false);
   };
 
   const fields = [
-    { label: "Full Name", name: "fullName" },
+    { label: "Full Name", name: "name" },
     { label: "Phone Number", name: "phone" },
     { label: "Gender", name: "gender" },
     { label: "Date of Birth", name: "dob" },
-    { label: "Panchayat / Municipality / Corporation", name: "localBody" },
+    { label: "Panchayat / Municipality / Corporation", name: "panchayath" },
     { label: "Taluk", name: "taluk" },
-    { label: "Annual Family Income (₹)", name: "annualIncome" },
+    { label: "Annual Family Income (₹)", name: "income" },
   ];
 
   const inputClass =
@@ -93,7 +134,7 @@ function UserProfile() {
 
           <button
             onClick={handleEdit}
-            className="flex items-center gap-2 rounded-xl bg-green-700 px-5 py-3 font-medium text-white shadow-sm transition hover:bg-blue-800"
+            className="flex items-center gap-2 rounded-xl bg-green-700 px-5 py-3 font-medium text-white shadow-sm transition hover:bg-green-800"
           >
             <span>✎</span> Edit Profile
           </button>
@@ -104,11 +145,11 @@ function UserProfile() {
 
           <div className="flex items-center gap-4 bg-gradient-to-r from-green-900 to-green-500 p-6 text-white sm:p-8">
             <div className="flex h-16 w-16 items-center justify-center rounded-full border border-white/30 bg-white/15 text-2xl font-bold">
-              {profile.fullName.charAt(0)}
+              {profile.name.charAt(0)}
             </div>
             <div>
               <h2 className="text-xl font-semibold">
-                {profile.fullName}
+                {profile.name}
               </h2>
               <p className="mt-1 text-sm text-blue-100">
                 Registered Citizen
@@ -197,8 +238,8 @@ function UserProfile() {
                       Full Name
                     </label>
                     <input
-                      name="fullName"
-                      value={formData.fullName}
+                      name="name"
+                      value={formData.name}
                       onChange={handleChange}
                       required
                       className={`${inputClass} mt-2`}
@@ -270,8 +311,8 @@ function UserProfile() {
                       Panchayat / Municipality / Corporation
                     </label>
                     <input
-                      name="localBody"
-                      value={formData.localBody}
+                      name="panchayath"
+                      value={formData.panchayath}
                       onChange={handleChange}
                       required
                       className={`${inputClass} mt-2`}
@@ -319,8 +360,8 @@ function UserProfile() {
                     <input
                       type="number"
                       min="0"
-                      name="annualIncome"
-                      value={formData.annualIncome}
+                      name="income"
+                      value={formData.income}
                       onChange={handleChange}
                       required
                       className={`${inputClass} mt-2`}

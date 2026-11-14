@@ -1,51 +1,11 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import SideBar from './SideBar'
 import Header from '../Components/Header'
 import { useState } from "react";
+import toast from 'react-hot-toast';
+import { findSchemesAPI } from '../../api/apiService';
 
 
-
-
-
-
-const schemes = [
-  {
-    id: 1,
-    name: "Post-Matric Scholarship",
-    category: "Education",
-    description:
-      "Financial assistance for eligible students pursuing education after matriculation.",
-    benefit: "Scholarship assistance as per scheme rules",
-    groups: ["SC", "ST", "OBC"],
-    maxIncome: 250000,
-    education: ["Plus Two", "Diploma", "Graduate", "Postgraduate"],
-    url: "https://scholarships.gov.in/",
-  },
-  {
-    id: 2,
-    name: "National Scholarship Portal Schemes",
-    category: "Education",
-    description:
-      "Explore central scholarship opportunities and their eligibility conditions.",
-    benefit: "Varies by scholarship",
-    groups: ["General", "OBC", "SC", "ST", "EWS"],
-    maxIncome: 800000,
-    education: ["Plus Two", "Diploma", "Graduate", "Postgraduate"],
-    url: "https://scholarships.gov.in/",
-  },
-  {
-    id: 3,
-    name: "Employment and Skill Development",
-    category: "Employment",
-    description:
-      "Explore skill training and employment services for eligible job seekers.",
-    benefit: "Depends on the programme",
-    groups: ["General", "OBC", "SC", "ST", "EWS"],
-    maxIncome: Infinity,
-    education: ["SSLC", "Plus Two", "Diploma", "Graduate", "Postgraduate"],
-    url: "https://www.ncs.gov.in/",
-  },
-];
 
   const districts = [
   "Thiruvananthapuram", "Kollam", "Pathanamthitta",
@@ -56,8 +16,7 @@ const schemes = [
 
 
 function FindSchemes() {
-
-  const [filters, setFilters] = useState({
+    const [filters, setFilters] = useState({
     age: "",
     district: "",
     gender: "",
@@ -66,6 +25,19 @@ function FindSchemes() {
     category: "",
     employment: "",
   });
+
+  const [schemes,setSchemes]=useState(null)
+
+  const sessionData=()=>{
+        const sessionStore=JSON.parse(sessionStorage.getItem("existingUser"))
+        setFilters({...filters,gender:sessionStore.gender,income:sessionStore.income,district:sessionStore.district})
+      }
+      
+    
+      useEffect(()=>{
+        sessionData()
+      },[])
+
 
   const [searched, setSearched] = useState(false);
 
@@ -76,18 +48,18 @@ function FindSchemes() {
     });
   };
 
-  const filteredSchemes = schemes.filter((scheme) => {
+  const filteredSchemes = schemes?.filter((scheme) => {
     const incomeMatches =
       filters.income === "" ||
       Number(filters.income) <= scheme.maxIncome;
 
     const categoryMatches =
       filters.category === "" ||
-      scheme.groups.includes(filters.category);
+      scheme.groups?.includes(filters.category);
 
     const educationMatches =
       filters.education === "" ||
-      scheme.education.includes(filters.education);
+      scheme.education?.includes(filters.education);
 
     return incomeMatches && categoryMatches && educationMatches;
   });
@@ -95,9 +67,17 @@ function FindSchemes() {
   const inputClass =
     "mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-green-600 focus:ring-2 focus:ring-green-100";
 
-
-    console.log(filters);
-    
+    const handleFindScheme=async()=>{
+      const{age,district,gender,income,education,category,employment}=filters
+      if(!age || !district || !gender || !income || !education || !category || !employment){
+        toast.error("Please fill all details to get an accurate result !!")
+      }else{
+        //api call
+        const response= await findSchemesAPI(filters)
+        setSchemes(response.data.data?.schemes);
+        setSearched(true)
+      }
+    }
 
   return (
     <div>
@@ -256,7 +236,7 @@ function FindSchemes() {
 
           <div className="mt-6 flex flex-wrap gap-3">
             <button
-              onClick={() => setSearched(true)}
+              onClick={handleFindScheme}
               className="rounded-xl bg-green-700 px-6 py-3 font-semibold text-white transition hover:bg-green-800"
             >
               Find Schemes
@@ -274,6 +254,7 @@ function FindSchemes() {
                   employment: "",
                 });
                 setSearched(false);
+                setSchemes(null)
               }}
               className="rounded-xl border border-slate-300 px-6 py-3 font-semibold text-slate-700 transition hover:bg-slate-50"
             >
@@ -290,59 +271,60 @@ function FindSchemes() {
                 Recommended Schemes
               </h2>
               <p className="mt-1 text-sm text-slate-500">
-                {searched
-                  ? `${filteredSchemes.length} potential match(es) found`
-                  : "Enter your details and select Find Schemes."}
+                {schemes?.length}
               </p>
             </div>
           </div>
 
-          {searched && filteredSchemes.length === 0 && (
-            <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center">
-              <p className="font-semibold text-slate-800">
-                No matching demo schemes found
-              </p>
-              <p className="mt-2 text-sm text-slate-500">
-                Try changing your filters or check official scheme portals.
-              </p>
-            </div>
-          )}
+          {/* {searched && filteredSchemes.length === 0 && (
+            
+          )} */}
 
-          {searched && filteredSchemes.length > 0 && (
-            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-              {filteredSchemes.map((scheme) => (
+          
+
+          {/* {searched && filteredSchemes.length > 0 && (
+            
+          )} */}
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+            {/* Duplication */}
+              {schemes?.length>0 ?
+              schemes?.map(item=>(
                 <div
-                  key={scheme.id}
+                  key={''}
                   className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-green-200 hover:shadow-lg"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-100 text-xl">
-                      {scheme.category === "Education" ? "🎓" : "💼"}
+                      {item?.government === "Central" ? "🎓" : "💼"}
                     </div>
                     <span className="rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700">
-                      {scheme.category}
+                      
+                      {item?.government}
                     </span>
                   </div>
 
                   <h3 className="mt-4 text-lg font-bold text-slate-900">
-                    {scheme.name}
+                    {item?.schemeName}
                   </h3>
 
                   <p className="mt-2 text-sm leading-6 text-slate-500">
-                    {scheme.description}
+                    {item?.description}
                   </p>
 
                   <div className="mt-5 rounded-xl bg-slate-50 p-4">
                     <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                      Benefits
+                      {item.benefits.map(item1=>item1)}
                     </p>
                     <p className="mt-2 text-sm font-medium text-slate-800">
-                      {scheme.benefit}
+                       {item.eligibility.map(item1=>item1)}
+                    </p>
+                    <p className="mt-2 text-sm font-medium text-slate-800">
+                      {item?.deadline}
                     </p>
                   </div>
 
                   <a
-                    href={scheme.url}
+                    href={item?.officialLink}
                     target="_blank"
                     rel="noreferrer"
                     className="mt-5 inline-flex items-center gap-2 font-semibold text-green-700 hover:text-green-900"
@@ -350,10 +332,21 @@ function FindSchemes() {
                     Visit Official Portal
                     <span aria-hidden="true">↗</span>
                   </a>
-                </div>
-              ))}
+              </div>
+              ))
+              
+            :
+            <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center">
+              <p className="font-semibold text-slate-800">
+                No matching schemes found
+              </p>
+              <p className="mt-2 text-sm text-slate-500">
+                Try changing your filters or check official scheme portals.
+              </p>
+          </div>
+            }
+                
             </div>
-          )}
 
           <p className="mt-5 text-xs leading-5 text-slate-400">
             These are illustrative demo records, not confirmed eligibility
