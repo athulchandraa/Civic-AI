@@ -1,8 +1,9 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { MdAccountBalance, MdArrowForward, MdLockOutline, MdOutlineMailOutline } from 'react-icons/md'
 import { useState } from 'react'
-import { toast } from 'react-toastify'
 import { loginUserAPI } from '../../api/apiService'
+import toast from 'react-hot-toast'
+
 
 function CitizenLogin() {
 
@@ -35,10 +36,10 @@ function CitizenLogin() {
         }       
        }
     }else{
-      toast.warning("Fill the form Completetly")
+      toast.error("Fill the form Completetly")
     }
-    }catch(error){
-      toast.error("Login Failed...")
+    }catch(error){      
+      toast.error(error.response?.data?.message || "Login Failed")
     }
   }
 

@@ -6,6 +6,18 @@ import { FaLocationArrow } from 'react-icons/fa'
 import { FaLocationDot } from 'react-icons/fa6'
 import { Link } from 'react-router-dom'
 import { getAllOfficerDataAPI } from '../../api/apiService'
+import * as React from 'react';
+import Box from '@mui/material/Box';
+import Modal from '@mui/material/Modal';
+import {
+  UserRound,
+  MapPin,
+  CarFront,
+  Gavel,
+  Star,
+  MessageSquareText,
+  ShieldCheck,
+} from "lucide-react";
 
 
 const leadership = [
@@ -60,20 +72,37 @@ function LeadershipCard({ person }) {
   )
 }
 
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 700,
+  maxWidth:'95vw',
+  maxHeight:'90vh',
+  overflowY:'auto',
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
+
 function DashBoard() {
   const [selectedDistrict, setSelectedDistrict] = useState('Thiruvananthapuram')
   const [hoveredDistrict, setHoveredDistrict] = useState(null)
   const displayedDistrict = hoveredDistrict ?? selectedDistrict
 
+  //MUI STATE
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const [officer,setOfficer]=useState(null)
 
   // console.log(officerslist.Thiruvananthapuram);
   const districtName=selectedDistrict
-  console.log(districtName);
 
-
-  const [officerslist,setOfficerslist]=useState({})
-  console.log(officerslist);
-  
+  const [officerslist,setOfficerslist]=useState({})  
   
     useEffect(()=>{
     getAllOfficers()
@@ -86,13 +115,16 @@ function DashBoard() {
   }
 
   const selectedOfficers=officerslist[selectedDistrict]
-  console.log(selectedOfficers);
-
   // Object.entries(selectedOfficers || {}).filter(([key])=>key !=="_id").map(([key,officer])=>(
   //   <div key={key}>
   //     <h2>{officer.name}</h2>
   //   </div>
   // ))
+
+  const handleViewprofile=(key,officer)=>{
+    handleOpen()
+    setOfficer(officer);    
+  }
   
 
 
@@ -126,7 +158,7 @@ function DashBoard() {
               href='/login'
               className="inline-flex items-center gap-2 rounded-xl bg-[#174a3b] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#21634d]"
             >
-              Citizen Login
+               Login / Signup
               <FiArrowDownRight aria-hidden="true" />
             </a>
           </div>
@@ -252,11 +284,11 @@ function DashBoard() {
                  Object.entries(selectedOfficers || {}).filter(([key])=>key!=="_id").map(([key,officer])=>(
                   <div className='shadow p-2 flex justify-center'>
                   <div>
-                    <div className='w-full flex justify-center'><img className='w-50 h-50' src="https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png" alt="" /></div>
+                    <div className='w-full flex justify-center'><img className='w-50 h-50' src={officer?.image || "https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png"} alt="" /></div>
                     <div className='w-full text-center mt-3'>
                       <p className='font-medium'>{officer.name}</p>
                       <p className='my-2 font-bold'>{key=="collector" ? "District Collector" : key=="dpc" ? "District Police Chief" : key=="dmo" ? "District Medical Officer" : key == "deo" ? "District Eductaional Officer" : key =="rto" ? "Regional Transport Officer" : key == "dfo" ? "District Forest Officer" : ""}</p>
-                      <Link className='bg-blue-200 px-3 py-1 rounded text-blue-800 font-medium'>View Profile</Link>
+                      <Link onClick={()=>handleViewprofile(key,officer)} className='bg-blue-200 px-3 py-1 rounded text-blue-800 font-medium'>View Profile</Link>
                     </div>
                   </div>
                  
@@ -290,6 +322,140 @@ function DashBoard() {
           </p>
         </footer>
       </main>
+      {/* MODAL */}
+
+      <div>
+        <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          {/* CONTENTS */}
+            <div className="space-y-5">
+
+  {/* Officer Profile */}
+  <div className="flex flex-col sm:flex-row items-center gap-5 p-5 rounded-2xl bg-gradient-to-r from-indigo-50 to-blue-50">
+    <div className="w-28 h-28 rounded-2xl overflow-hidden bg-indigo-100 flex items-center justify-center shrink-0">
+      {officer?.image ? (
+        <img
+          src={officer.image}
+          alt={officer.name}
+          className="w-full h-full object-cover"
+        />
+      ) : (
+        <UserRound size={55} className="text-indigo-400" />
+      )}
+    </div>
+
+    <div className="text-center sm:text-left">
+      <h2 className="text-2xl font-bold text-slate-800">
+        {officer?.name || "Officer Name"}
+      </h2>
+
+      <span className="inline-block mt-2 px-4 py-1.5 rounded-full bg-indigo-100 text-indigo-700 text-sm font-semibold">
+        {officer?.designation || "Designation"}
+      </span>
+
+      <p className="flex items-center justify-center sm:justify-start gap-2 mt-3 text-sm text-slate-500">
+        <MapPin size={17} />
+        {selectedDistrict}
+      </p>
+    </div>
+  </div>
+
+  {/* Official Details */}
+  <div>
+    <h3 className="text-lg font-bold text-slate-800 mb-3">
+      Official Information
+    </h3>
+
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+      <div className="p-4 rounded-xl border border-slate-200 bg-white">
+        <div className="flex items-center gap-2 text-indigo-600 mb-2">
+          <MapPin size={19} />
+          <span className="text-sm font-semibold">Office Address</span>
+        </div>
+        <p className="text-sm text-slate-600">
+          {officer?.address || "Not available"}
+        </p>
+      </div>
+
+      <div className="p-4 rounded-xl border border-slate-200 bg-white">
+        <div className="flex items-center gap-2 text-indigo-600 mb-2">
+          <CarFront size={19} />
+          <span className="text-sm font-semibold">Contact Details</span>
+        </div>
+        {/* <p className="text-sm text-slate-600">
+          {officer?.officialVehicle || "Not available"}
+        </p> */}
+        <p className='text-sm text-slate-600'>{officer?.mobile}</p>
+        <p className='text-sm text-slate-600'>{officer?.email}</p>
+      </div>
+
+      <div className="p-4 rounded-xl border border-emerald-200 bg-emerald-50 sm:col-span-2">
+        <div className="flex items-center gap-2 text-emerald-700 mb-2">
+          <Gavel size={19} />
+          <span className="text-sm font-semibold">Completed Cases</span>
+        </div>
+        <p className="text-3xl font-bold text-emerald-700">
+          {officer?.completedCases ?? 0}
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  {/* Rating & Feedback */}
+  <div className="p-5 rounded-2xl bg-gradient-to-r from-violet-50 to-indigo-50 border border-indigo-100">
+
+    <div className="flex items-center gap-3 mb-4">
+      <div className="p-3 bg-white rounded-xl text-indigo-600">
+        <MessageSquareText size={23} />
+      </div>
+      <div>
+        <h3 className="font-bold text-slate-800">
+          Rating & Feedback
+        </h3>
+        <p className="text-xs text-slate-500 mt-1">
+          Share your experience with this officer.
+        </p>
+      </div>
+    </div>
+
+    <div className="flex items-center justify-between flex-wrap gap-3">
+      <div className="flex items-center gap-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <Star
+            key={star}
+            size={24}
+            className={star <= 4
+              ? "fill-amber-400 text-amber-400"
+              : "text-slate-300"}
+          />
+        ))}
+        <span className="text-sm font-semibold text-slate-600 ml-2">
+          4.0 / 5
+        </span>
+      </div>
+
+      <button
+        type="button"
+        className="flex items-center gap-2 px-5 py-2.5 bg-indigo-700 hover:bg-indigo-800 text-white rounded-xl text-sm font-semibold transition"
+      >
+        <MessageSquareText size={17} />
+        Give Feedback
+      </button>
+    </div>
+  </div>
+
+</div>
+        </Box>
+      </Modal>
+      </div>
+
     </div>
   )
 }

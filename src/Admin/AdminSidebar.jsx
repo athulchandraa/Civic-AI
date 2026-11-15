@@ -1,5 +1,5 @@
 
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   FileText,
@@ -7,8 +7,11 @@ import {
   ClipboardList,
   Landmark
 } from "lucide-react";
+import toast from "react-hot-toast";
 
 const AdminSidebar = () => {
+
+  const navigate=useNavigate()
 
   const menuItems = [
     {
@@ -33,6 +36,16 @@ const AdminSidebar = () => {
       icon: ClipboardList
     }
   ];
+
+      const handleLogout=()=>{
+        sessionStorage.clear("existingUser")
+        sessionStorage.clear("token")
+        toast.success("Logout success...")
+        setTimeout(()=>{
+        navigate('/')
+        },1500)
+      }
+
 
   return (
     <div className="w-64 min-h-screen bg-slate-900 text-white flex flex-col fixed">
@@ -97,6 +110,11 @@ const AdminSidebar = () => {
             );
 
           })}
+          <NavLink onClick={handleLogout} className={({ isActive }) =>
+                  `flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-200`
+                }>
+            <p>Logout</p>
+          </NavLink>
 
         </nav>
 
