@@ -155,13 +155,13 @@ function DashBoard() {
               <span className="h-2 w-2 rounded-full bg-[#4c9468]" />
               Citizen Login
             </span> */}
-            <a
-              href='/login'
+            <Link
+              to='/login'
               className="inline-flex items-center gap-2 rounded-xl bg-[#174a3b] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#21634d]"
             >
                Login / Signup
               <FiArrowDownRight aria-hidden="true" />
-            </a>
+            </Link>
           </div>
         </div>
       </header>
