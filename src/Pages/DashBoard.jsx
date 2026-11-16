@@ -18,6 +18,7 @@ import {
   MessageSquareText,
   ShieldCheck,
 } from "lucide-react";
+import { MdAccountBalance } from 'react-icons/md'
 
 
 const leadership = [
@@ -140,7 +141,7 @@ function DashBoard() {
         <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-4 px-5 py-4 sm:px-8 lg:px-12">
           <a className="flex min-w-0 items-center gap-3" href="#top" aria-label="Civic AI home">
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#174a3b] text-white shadow-sm">
-              <FiShield aria-hidden="true" className="text-xl" />
+              <MdAccountBalance aria-hidden="true" className="text-xl" />
             </span>
             <span className="min-w-0">
               <span className="block text-base font-bold tracking-tight text-[#174a3b]">Civic AI</span>

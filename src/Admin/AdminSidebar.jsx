@@ -1,5 +1,6 @@
 
 import { NavLink, useNavigate } from "react-router-dom";
+import { IoIosLogOut } from "react-icons/io";
 import {
   LayoutDashboard,
   FileText,
@@ -25,11 +26,11 @@ const AdminSidebar = () => {
       path: "/admin/complaint-view",
       icon: FileText
     },
-    {
-      name: "Officer Management",
-      path: "/admin/officer-management",
-      icon: Users
-    },
+    // {
+    //   name: "Officer Management",
+    //   path: "/admin/officer-management",
+    //   icon: Users
+    // },
     {
       name: "RTI Management",
       path: "/admin/rti-management",
@@ -110,10 +111,11 @@ const AdminSidebar = () => {
             );
 
           })}
-          <NavLink onClick={handleLogout} className={({ isActive }) =>
-                  `flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-200`
-                }>
-            <p>Logout</p>
+          <NavLink onClick={handleLogout} className=" ">
+            <div className="flex items-center hover:bg-slate-800 rounded px-4 py-2 gap-3  text-red-600 ">
+              <IoIosLogOut className="text-2xl"/>
+              <p>Logout</p>
+            </div>
           </NavLink>
 
         </nav>

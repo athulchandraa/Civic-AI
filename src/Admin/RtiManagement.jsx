@@ -50,9 +50,7 @@ const RtiManagement = () => {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
   const [selectedRTI, setSelectedRTI] = useState(null);
-  const[allRTI,setALLRti]=useState(null)
-  console.log(allRTI);
-  
+  const[allRTI,setALLRti]=useState(null)  
 
   const updateStatus = (id, status) => {
     setRequests((prev) =>
@@ -78,32 +76,32 @@ const RtiManagement = () => {
     return matchesSearch && matchesFilter;
   });
 
-  const stats = [
-    {
-      title: "Total Applications",
-      value: requests.length,
-      icon: <FileText size={22} />,
-      color: "bg-blue-100 text-blue-600",
-    },
-    {
-      title: "Pending",
-      value: requests.filter((r) => r.status === "Pending").length,
-      icon: <Clock size={22} />,
-      color: "bg-yellow-100 text-yellow-600",
-    },
-    {
-      title: "Approved",
-      value: requests.filter((r) => r.status === "Approved").length,
-      icon: <CheckCircle size={22} />,
-      color: "bg-green-100 text-green-600",
-    },
-    {
-      title: "Rejected",
-      value: requests.filter((r) => r.status === "Rejected").length,
-      icon: <XCircle size={22} />,
-      color: "bg-red-100 text-red-600",
-    },
-  ];
+  // const stats = [
+  //   {
+  //     title: "Total Applications",
+  //     value: requests.length,
+  //     icon: <FileText size={22} />,
+  //     color: "bg-blue-100 text-blue-600",
+  //   },
+  //   {
+  //     title: "Pending",
+  //     value: requests.filter((r) => r.status === "Pending").length,
+  //     icon: <Clock size={22} />,
+  //     color: "bg-yellow-100 text-yellow-600",
+  //   },
+  //   {
+  //     title: "Approved",
+  //     value: requests.filter((r) => r.status === "Approved").length,
+  //     icon: <CheckCircle size={22} />,
+  //     color: "bg-green-100 text-green-600",
+  //   },
+  //   {
+  //     title: "Rejected",
+  //     value: requests.filter((r) => r.status === "Rejected").length,
+  //     icon: <XCircle size={22} />,
+  //     color: "bg-red-100 text-red-600",
+  //   },
+  // ];
 
   const statusStyle = {
     Pending: "bg-yellow-100 text-yellow-700",
@@ -115,6 +113,8 @@ const RtiManagement = () => {
     const response=await getAllRTIAPI()
     setALLRti(response.data.data);
   }
+  console.log(allRTI);
+  
 
   useEffect(()=>{
     getAllRtiData()
@@ -280,15 +280,15 @@ const RtiManagement = () => {
               </div>
 
               <div className="space-y-3 text-sm">
-                <p><strong>RTI ID:</strong> {selectedRTI.id}</p>
-                <p><strong>Applicant:</strong> {selectedRTI.applicant}</p>
-                <p><strong>Department:</strong> {selectedRTI.department}</p>
+                <p><strong>RTI ID:</strong> {selectedRTI._id}</p>
+                <p><strong>Applicant:</strong> {selectedRTI.applicantName}</p>
+                <p><strong>Department:</strong> {selectedRTI.authority}</p>
                 <p><strong>Subject:</strong> {selectedRTI.subject}</p>
-                <p><strong>Submitted Date:</strong> {selectedRTI.date}</p>
+                <p><strong>Submitted Date:</strong> {selectedRTI.submittedAt}</p>
                 <p>
                   <strong>Description:</strong>
                   <span className="block mt-1 text-gray-600">
-                    {selectedRTI.description}
+                    {selectedRTI.information}
                   </span>
                 </p>
                 <p>

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosInstace=axios.create({
-    baseURL:"http://localhost:3000"
+    baseURL:" https://civic-ai-backend-95du.onrender.com"
 },5000)
 
 
