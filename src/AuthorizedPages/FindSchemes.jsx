@@ -82,7 +82,7 @@ function FindSchemes() {
   return (
     <div>
       <SideBar/>
-      <div className='ml-65'>
+      <div className='md:ml-60'>
         <Header/>
         <div className="min-h-screen bg-slate-50 px-4 py-8 sm:px-8">
       <div className="mx-auto max-w-6xl">

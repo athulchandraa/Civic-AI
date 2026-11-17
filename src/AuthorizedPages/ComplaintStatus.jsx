@@ -25,7 +25,7 @@ function ComplaintStatus() {
   return (
     <div className='flex'>
       <SideBar data={'File a Complaint'}/>
-      <div className='w-full ml-65'>
+      <div className='w-full md:ml-60'>
         <Header/>
         <div className="mx-auto max-w-5xl p-4 sm:p-6">
       <h1 className="text-2xl font-bold text-gray-900">

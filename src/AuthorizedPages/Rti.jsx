@@ -168,7 +168,7 @@ function Rti() {
   return (
     <div className='flex'>
       <SideBar data={'File a Complaint'}/>
-      <div className='w-full ml-65'>
+      <div className='w-full md:ml-60'>
         <Header/>
         <div className='p-3'>
           <div className="min-h-screen bg-slate-50 px-4 py-6 sm:px-6 lg:px-10 lg:py-10">

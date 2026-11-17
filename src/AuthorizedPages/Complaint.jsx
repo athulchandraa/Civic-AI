@@ -188,7 +188,7 @@ function Complaint() {
   return (
     <div className='flex'>
       <SideBar data={'File a Complaint'}/>
-      <div className='w-full ml-60'>
+      <div className='w-full md:ml-60'>
         <Header/>
         <div className='p-3'>
           {/* Chatgpt Content */}
