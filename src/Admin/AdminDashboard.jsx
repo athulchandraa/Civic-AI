@@ -48,7 +48,7 @@ const AdminDashboard = () => {
       <AdminSidebar />
 
       {/* Dashboard Content */}
-      <div className="flex-1 min-w-0 p-6 ml-65">
+      <div className="flex-1 min-w-0 p-6 md:ml-60">
 
         {/* Header */}
         <div className="mb-8">

@@ -124,7 +124,7 @@ const RtiManagement = () => {
     <div className="flex min-h-screen bg-gray-100">
       <AdminSidebar />
 
-      <main className="flex-1 p-5 md:p-8 overflow-x-hidden ml-65">
+      <main className="flex-1 p-5 md:p-8 overflow-x-hidden md:ml-60">
         <div className="mb-7">
           <h1 className="text-2xl font-bold text-gray-800">
             RTI Management
