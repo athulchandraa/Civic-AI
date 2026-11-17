@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { IoIosLogOut } from "react-icons/io";
 import {
@@ -6,13 +7,16 @@ import {
   FileText,
   Users,
   ClipboardList,
-  Landmark
+  Landmark,
+  Menu,
+  X
 } from "lucide-react";
 import toast from "react-hot-toast";
 
 const AdminSidebar = () => {
 
   const navigate=useNavigate()
+  const [isOpen, setIsOpen] = useState(false);
 
   const menuItems = [
     {
@@ -49,7 +53,29 @@ const AdminSidebar = () => {
 
 
   return (
-    <div className="w-64 min-h-screen bg-slate-900 text-white flex flex-col fixed">
+    <>
+      <button
+        type="button"
+        aria-label="Open navigation menu"
+        aria-expanded={isOpen}
+        onClick={() => setIsOpen(true)}
+        className="fixed top-4 left-4 z-40 rounded-md bg-slate-900 p-2 text-white md:hidden"
+      >
+        <Menu size={24} />
+      </button>
+
+      {isOpen && (
+        <button
+          type="button"
+          aria-label="Close navigation menu"
+          onClick={() => setIsOpen(false)}
+          className="fixed inset-0 z-40 bg-black/50 md:hidden"
+        />
+      )}
+
+      <div className={`fixed z-50 flex min-h-screen w-64 flex-col bg-slate-900 text-white transition-transform duration-300 ease-in-out md:z-auto md:translate-x-0 ${
+        isOpen ? "translate-x-0" : "-translate-x-full"
+      }`}>
 
       {/* Logo */}
       <div className="px-6 py-7 border-b border-slate-700">
@@ -72,6 +98,15 @@ const AdminSidebar = () => {
 
       </div>
 
+      <button
+        type="button"
+        aria-label="Close navigation menu"
+        onClick={() => setIsOpen(false)}
+        className="absolute right-4 top-4 rounded-md p-1 text-white md:hidden"
+      >
+        <X size={24} />
+      </button>
+
       {/* Menu */}
       <div className="px-4 py-6">
 
@@ -91,6 +126,7 @@ const AdminSidebar = () => {
                 key={item.path}
                 to={item.path}
                 end={item.end}
+                onClick={() => setIsOpen(false)}
                 className={({ isActive }) =>
                   `flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-200 ${
                     isActive
@@ -111,7 +147,10 @@ const AdminSidebar = () => {
             );
 
           })}
-          <NavLink onClick={handleLogout} className=" ">
+          <NavLink onClick={() => {
+            setIsOpen(false);
+            handleLogout();
+          }} className=" ">
             <div className="flex items-center hover:bg-slate-800 rounded px-4 py-2 gap-3  text-red-600 ">
               <IoIosLogOut className="text-2xl"/>
               <p>Logout</p>
@@ -122,7 +161,8 @@ const AdminSidebar = () => {
 
       </div>
 
-    </div>
+      </div>
+    </>
   );
 };
 

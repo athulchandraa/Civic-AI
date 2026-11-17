@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 function SideBar(data) {
    const [activeMenu, setActiveMenu] = useState("Dashboard");
+   const [isOpen, setIsOpen] = useState(false);
    const Location=useNavigate()
 
    const menuItems = [
@@ -43,7 +44,31 @@ function SideBar(data) {
 
 
   return (
-    <aside className="flex h-screen w-64 flex-col border-r fixed border-gray-200 bg-white px-4 py-6">
+    <>
+      <button
+        type="button"
+        aria-label="Open navigation menu"
+        aria-expanded={isOpen}
+        onClick={() => setIsOpen(true)}
+        className="fixed left-4 top-4 z-40 rounded-lg bg-white p-2 text-gray-700 shadow-md md:hidden"
+      >
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-6 w-6">
+          <path strokeLinecap="round" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <button
+          type="button"
+          aria-label="Close navigation menu"
+          onClick={() => setIsOpen(false)}
+          className="fixed inset-0 z-40 bg-black/50 md:hidden"
+        />
+      )}
+
+    <aside className={`flex h-screen w-64 flex-col border-r fixed border-gray-200 bg-white px-4 py-6 z-50 transform transition-transform duration-300 ease-in-out md:z-auto md:translate-x-0 ${
+      isOpen ? "translate-x-0" : "-translate-x-full"
+    }`}>
 
       {/* Logo */}
       <div className="mb-10 px-3">
@@ -55,12 +80,26 @@ function SideBar(data) {
         </p>
       </div>
 
+      <button
+        type="button"
+        aria-label="Close navigation menu"
+        onClick={() => setIsOpen(false)}
+        className="absolute right-4 top-4 rounded-md p-1 text-gray-600 md:hidden"
+      >
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-6 w-6">
+          <path strokeLinecap="round" d="m6 6 12 12M18 6 6 18" />
+        </svg>
+      </button>
+
       {/* Menu */}
       <nav className="flex-1 space-y-2">
         {menuItems.map((item) => (
           <button
             key={item.name}
-            onClick={() => SelectedMenu(item.name)}
+            onClick={() => {
+              setIsOpen(false);
+              SelectedMenu(item.name);
+            }}
             className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left font-medium transition ${
               activeMenu === data
                 ? "bg-emerald-100 text-emerald-800"
@@ -76,7 +115,10 @@ function SideBar(data) {
       {/* Logout */}
       <div className="border-t border-gray-200 pt-4">
         <button
-          onClick={() => SelectedMenu("logout")}
+          onClick={() => {
+            setIsOpen(false);
+            SelectedMenu("logout");
+          }}
           className="flex w-full items-center gap-3 rounded-xl px-4 py-3 font-medium text-red-600 transition hover:bg-red-50"
         >
           <span className="text-xl">⇥</span>
@@ -85,6 +127,7 @@ function SideBar(data) {
       </div>
 
     </aside>
+    </>
   )
 }
 
