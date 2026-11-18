@@ -13,6 +13,7 @@ import { RiLoopLeftFill } from "react-icons/ri";
 import { MdOutlineDone } from "react-icons/md";
 import { RxCross1 } from "react-icons/rx";
 import toast from "react-hot-toast";
+import LoadingScreen from '../Components/LoadingScreen'
 
 const style = {
   position: 'absolute',
@@ -36,6 +37,8 @@ const ComplaintView = () => {
   const [manageComplaint,setManageComplaint]=useState("")
   console.log(manageComplaint);
 
+  const [isLoading,setIsLoading]=useState(true)
+
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -44,6 +47,7 @@ const ComplaintView = () => {
   const getComplaintDetails=async()=>{
     const response=await getAllComplaintsAPI()
     setComplaints(response.data.data);
+    setIsLoading(false)
   }
   useEffect(()=>{
     getComplaintDetails()
@@ -289,6 +293,13 @@ const ComplaintView = () => {
         </Box>
       </Modal>
     </div>
+
+    {
+        isLoading &&
+        <div>
+        <LoadingScreen/>
+      </div>}
+
 
     </div>
   );

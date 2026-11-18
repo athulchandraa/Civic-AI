@@ -12,7 +12,7 @@ import Modal from '@mui/material/Modal';
 import {
   UserRound,
   MapPin,
-  CarFront,
+  PhoneLog,
   Gavel,
   Star,
   MessageSquareText,
@@ -93,6 +93,9 @@ function DashBoard() {
   const [hoveredDistrict, setHoveredDistrict] = useState(null)
   const displayedDistrict = hoveredDistrict ?? selectedDistrict
 
+  const [isLoad,setIsLoad]=useState(false)
+  
+
   //MUI STATE
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
@@ -113,6 +116,7 @@ function DashBoard() {
   const getAllOfficers=async()=>{
     const response=await getAllOfficerDataAPI()
     setOfficerslist(response?.data[0]?.districts || {});
+    setIsLoad(!isLoad)
   }
 
   const selectedOfficers=officerslist[selectedDistrict]
@@ -128,8 +132,6 @@ function DashBoard() {
   }
   
 
-
-  
   
   
   
@@ -279,7 +281,9 @@ function DashBoard() {
                 </div>
               </div>
               {/* Officers Listing  */}
-              <div className='grid grid-cols-3 gap-5 my-5 p-2'>
+             {
+              isLoad?
+              <div className='md:grid grid-cols-3 gap-5 my-5 p-2'>
                 {/* Duplicating... */}
                 {
                  Object.entries(selectedOfficers || {}).filter(([key])=>key!=="_id").map(([key,officer])=>(
@@ -289,7 +293,9 @@ function DashBoard() {
                     <div className='w-full text-center mt-3'>
                       <p className='font-medium'>{officer.name}</p>
                       <p className='my-2 font-bold'>{key=="collector" ? "District Collector" : key=="dpc" ? "District Police Chief" : key=="dmo" ? "District Medical Officer" : key == "deo" ? "District Eductaional Officer" : key =="rto" ? "Regional Transport Officer" : key == "dfo" ? "District Forest Officer" : ""}</p>
-                      <Link onClick={()=>handleViewprofile(key,officer)} className='bg-blue-200 px-3 py-1 rounded text-blue-800 font-medium'>View Profile</Link>
+                      <div className='my-2'>
+                        <Link onClick={()=>handleViewprofile(key,officer)} className='bg-blue-200 px-3 py-1 rounded text-blue-800 font-medium'>View Profile</Link></div>
+                     
                     </div>
                   </div>
                  
@@ -301,7 +307,19 @@ function DashBoard() {
                 
                 
 
-              </div>
+              </div> : 
+              <div className='flex justify-center items-center h-150'>
+        {/* <!-- From Uiverse.io by SmookyDev -->  */}
+            <div
+              className="w-32 aspect-square rounded-full relative flex justify-center items-center animate-[spin_3s_linear_infinite] z-40 bg-[conic-gradient(white_0deg,white_300deg,transparent_270deg,transparent_360deg)] before:animate-[spin_2s_linear_infinite] before:absolute before:w-[60%] before:aspect-square before:rounded-full before:z-[80] before:bg-[conic-gradient(white_0deg,white_270deg,transparent_180deg,transparent_360deg)] after:absolute after:w-3/4 after:aspect-square after:rounded-full after:z-[60] after:animate-[spin_3s_linear_infinite] after:bg-[conic-gradient(#065f46_0deg,#065f46_180deg,transparent_180deg,transparent_360deg)]"
+            >
+              <span
+                className="absolute w-[85%] aspect-square rounded-full z-[60] animate-[spin_5s_linear_infinite] bg-[conic-gradient(#34d399_0deg,#34d399_180deg,transparent_180deg,transparent_360deg)]"
+              >
+              </span>
+            </div>
+      </div>
+              }
             </div>
             
           </div>
@@ -386,7 +404,7 @@ function DashBoard() {
 
       <div className="p-4 rounded-xl border border-slate-200 bg-white">
         <div className="flex items-center gap-2 text-indigo-600 mb-2">
-          <CarFront size={19} />
+          <PhoneLog size={19} />
           <span className="text-sm font-semibold">Contact Details</span>
         </div>
         {/* <p className="text-sm text-slate-600">
@@ -452,6 +470,9 @@ function DashBoard() {
     </div>
   </div>
 
+</div>
+<div className='flex justify-center mt-5'>
+  <button onClick={()=>handleClose()} className='px-3 py-1 bg-red-500 text-white font-medium rounded'>close</button>
 </div>
         </Box>
       </Modal>

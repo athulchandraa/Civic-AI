@@ -2,19 +2,21 @@ import React, { useState } from 'react'
 import SideBar from './SideBar'
 import Header from '../Components/Header'
 import { getComplaintHistory } from '../../api/apiService';
-
+import LoadingScreen from '../Components/LoadingScreen'
 
 
 function ComplaintStatus() {
 
   const [complaint,setComplaint]=useState("")
 
+  const[isLoading,setIsLoading]=useState(true)
+
   const getComplaintHistoryList=async()=>{
     const sessionData=JSON.parse(sessionStorage.getItem("existingUser"))
     const email=sessionData.email
     const response=await getComplaintHistory(email)
     setComplaint(response.data.data);
-    
+    setIsLoading(false)
   }
 
   useState(()=>{
@@ -97,6 +99,13 @@ function ComplaintStatus() {
       </div>
     </div>
       </div>
+
+        {
+        isLoading &&
+        <div>
+        <LoadingScreen/>
+      </div>}
+
     </div>
   )
 }

@@ -3,6 +3,7 @@ import { MdAccountBalance, MdArrowForward, MdLockOutline, MdOutlineMailOutline }
 import { useState } from 'react'
 import { loginUserAPI } from '../../api/apiService'
 import toast from 'react-hot-toast'
+import LoadingScreen from '../Components/LoadingScreen'
 
 
 function CitizenLogin() {
@@ -13,7 +14,10 @@ function CitizenLogin() {
     password:""
   })
 
+  const[isLoading,setIsLoading]=useState(false)
+
   const loginBtn=async()=>{
+    setIsLoading(true)
     try{
       const {email,password}=userData
     if(email && password){
@@ -38,7 +42,8 @@ function CitizenLogin() {
     }else{
       toast.error("Fill the form Completetly")
     }
-    }catch(error){      
+    }catch(error){   
+      setIsLoading(false)   
       toast.error(error.response?.data?.message || "Login Failed")
     }
   }
@@ -165,6 +170,11 @@ function CitizenLogin() {
           </p>
         </div>
       </section>
+      {
+        isLoading &&
+        <div>
+        <LoadingScreen/>
+      </div>}
     </main>
   )
 }

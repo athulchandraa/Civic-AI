@@ -4,6 +4,7 @@ import Header from '../Components/Header'
 import { useState } from "react";
 import toast from 'react-hot-toast';
 import { findSchemesAPI } from '../../api/apiService';
+import LoadingScreen from '../Components/LoadingScreen';
 
 
 
@@ -27,6 +28,7 @@ function FindSchemes() {
   });
 
   const [schemes,setSchemes]=useState(null)
+  const[isLoading,setIsLoading]=useState(false)
 
   const sessionData=()=>{
         const sessionStore=JSON.parse(sessionStorage.getItem("existingUser"))
@@ -68,6 +70,7 @@ function FindSchemes() {
     "mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition focus:border-green-600 focus:ring-2 focus:ring-green-100";
 
     const handleFindScheme=async()=>{
+      setIsLoading(true)
       const{age,district,gender,income,education,category,employment}=filters
       if(!age || !district || !gender || !income || !education || !category || !employment){
         toast.error("Please fill all details to get an accurate result !!")
@@ -75,6 +78,7 @@ function FindSchemes() {
         //api call
         const response= await findSchemesAPI(filters)
         setSchemes(response.data.data?.schemes);
+        setIsLoading(false)
         setSearched(true)
       }
     }
@@ -271,7 +275,7 @@ function FindSchemes() {
                 Recommended Schemes
               </h2>
               <p className="mt-1 text-sm text-slate-500">
-                {schemes?.length}
+               Total Schemes : {schemes?.length}
               </p>
             </div>
           </div>
@@ -357,6 +361,12 @@ function FindSchemes() {
       </div>
     </div>
       </div>
+
+      {
+        isLoading &&
+        <div>
+        <LoadingScreen/>
+      </div>}
      
     </div>
   )

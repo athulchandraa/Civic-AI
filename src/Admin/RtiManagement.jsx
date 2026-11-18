@@ -11,6 +11,7 @@ import {
   X,
 } from "lucide-react";
 import { getAllRTIAPI } from "../../api/apiService";
+import LoadingScreen from "../Components/LoadingScreen";
 
 const initialRTIRequests = [
   {
@@ -51,6 +52,7 @@ const RtiManagement = () => {
   const [filter, setFilter] = useState("All");
   const [selectedRTI, setSelectedRTI] = useState(null);
   const[allRTI,setALLRti]=useState(null)  
+  const [isLoading,setIsLoading]=useState(true)
 
   const updateStatus = (id, status) => {
     setRequests((prev) =>
@@ -112,9 +114,8 @@ const RtiManagement = () => {
   const getAllRtiData=async()=>{
     const response=await getAllRTIAPI()
     setALLRti(response.data.data);
-  }
-  console.log(allRTI);
-  
+    setIsLoading(false)
+  }  
 
   useEffect(()=>{
     getAllRtiData()
@@ -325,6 +326,13 @@ const RtiManagement = () => {
           </div>
         )}
       </main>
+
+      {
+        isLoading &&
+        <div>
+        <LoadingScreen/>
+      </div>}
+
     </div>
   );
 };
